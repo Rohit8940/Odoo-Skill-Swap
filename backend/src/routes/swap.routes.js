@@ -8,9 +8,9 @@ import {
 
 const router = Router();
 
-router.use(protect);             // all below require JWT
-router.post('/', createSwap);    // Screen 4 → “Request” button
-router.get('/my', mySwaps);      // Screen 6 → list
+router.use(protect);             
+router.post('/', createSwap);    
+router.get('/my', mySwaps);      
 router.patch('/:id/status', updateStatus);
 
 export default router;

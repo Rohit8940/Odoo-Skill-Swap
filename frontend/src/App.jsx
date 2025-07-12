@@ -12,7 +12,7 @@ import SwapRequests from './pages/SwapRequests.jsx';
 import Admin from './pages/Admin.jsx';
 import UserProfileView from './pages/UserProfileView.jsx';
 
-/* ---------- Auth gate ---------- */
+
 const PrivateRoute = ({ children }) => {
   const { token } = useAuth();
   return token ? children : <Navigate to="/register" replace />;
@@ -24,7 +24,7 @@ const App = () => (
       {/* PUBLIC routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      {/* You can leave /search public, or protect it—your choice */}
+      
       <Route path="/search" element={<Search />} />
 
       {/* PROTECTED routes */}

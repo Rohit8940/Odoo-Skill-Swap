@@ -15,16 +15,16 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthProvider.jsx';
 
 const SwapRequestDialog = ({ open, onClose, targetUser }) => {
-  const { user, setUser } = useAuth(); // logged‑in user (has skillsOffered)
+  const { user, setUser } = useAuth(); 
   const [mySkill, setMySkill] = useState('');
   const [theirSkill, setTheirSkill] = useState('');
   const [message, setMessage] = useState('');
 
-  /* local option arrays so we can push new skills */
+
   const [myOptions, setMyOptions] = useState([]);
   const [theirOptions, setTheirOptions] = useState([]);
 
-  /* Reset dialog on open */
+
   useEffect(() => {
     if (open) {
       setMyOptions(user?.skillsOffered || []);
@@ -35,7 +35,7 @@ const SwapRequestDialog = ({ open, onClose, targetUser }) => {
     }
   }, [open, user, targetUser]);
 
-  /* Handlers to add newly typed skills into option arrays */
+
   const onMySkillChange = (_, val) => {
     if (val && !myOptions.includes(val)) setMyOptions((prev) => [...prev, val]);
     setMySkill(val);
@@ -47,19 +47,18 @@ const SwapRequestDialog = ({ open, onClose, targetUser }) => {
   };
 const handleSubmit = async () => {
   try {
-    // 1. If mySkill is new, add it to profile first
+    
     if (!user.skillsOffered.includes(mySkill)) {
       await api.patch('/users/me', {
         $addToSet: { skillsOffered: mySkill },
       });
-      // also update local context so dropdown stays in sync
+      
       setUser((prev) => ({
         ...prev,
         skillsOffered: [...(prev.skillsOffered || []), mySkill],
       }));
     }
 
-    // 2. Now create the swap
     await api.post('/swaps', {
       toUser: targetUser._id,
       offeredSkill: mySkill,
@@ -67,7 +66,7 @@ const handleSubmit = async () => {
       message,
     });
 
-    // optional toast
+ 
     onClose();
   } catch (err) {
     console.error('Swap request failed', err.response?.data || err.message);
@@ -82,7 +81,7 @@ const handleSubmit = async () => {
 
       <DialogContent sx={{ pt: 3 }}>
         <Stack spacing={3}>
-          {/* Your offered skill */}
+         
           <Autocomplete
             freeSolo
             options={myOptions}
@@ -94,7 +93,7 @@ const handleSubmit = async () => {
             )}
           />
 
-          {/* Their wanted skill */}
+      
           <Autocomplete
             freeSolo
             options={theirOptions}
@@ -106,7 +105,7 @@ const handleSubmit = async () => {
             )}
           />
 
-          {/* Optional message */}
+     
           <TextField
             label="Message (optional)"
             multiline
@@ -116,7 +115,7 @@ const handleSubmit = async () => {
             fullWidth
           />
 
-          {/* Small helper if arrays are empty */}
+  
           {!myOptions.length && (
             <FormHelperText>
               Type a skill and press Enter to add it.

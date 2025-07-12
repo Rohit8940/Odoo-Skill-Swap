@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, createContext } from 'react';
-import api from '../services/api'; // make sure you imported api here
+import api from '../services/api'; 
 
 const AuthContext = createContext();
 
@@ -11,7 +11,7 @@ const AuthProvider = ({ children }) => {
     () => JSON.parse(localStorage.getItem('user')) || null
   );
 
-  /* Attach token to axios */
+
   useEffect(() => {
     if (token) {
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -22,14 +22,14 @@ const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  /* Keep user in storage */
+  
   useEffect(() => {
     user
       ? localStorage.setItem('user', JSON.stringify(user))
       : localStorage.removeItem('user');
   }, [user]);
 
-  /* ------- Helpers ------- */
+ 
   const refreshProfile = async () => {
     const { data } = await api.get('/users/me');
     setUser(data);

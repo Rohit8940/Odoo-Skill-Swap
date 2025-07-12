@@ -26,7 +26,6 @@ const Search = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      // real: const { data } = await api.get('/users', { params: { skill: query, availability } });
       const mock = [
         { id: 1, name: 'Marc Demo', photo: '', skillsOffered: ['JavaScript'], skillsWanted: ['Photoshop'], rating: 3.9 },
         { id: 2, name: 'Michell', photo: '', skillsOffered: ['Python'], skillsWanted: ['Graphic design'], rating: 2.5 },
@@ -97,7 +96,7 @@ const Search = () => {
           <UserCard
             key={u.id}
             user={u}
-            onRequest={() => {}}      /* no request button in search page */
+            onRequest={() => {}}      
           />
         ))}
       </Stack>

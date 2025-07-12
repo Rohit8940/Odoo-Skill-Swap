@@ -46,7 +46,7 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-  const [notificationCount, setNotificationCount] = useState(3); // Mock count
+  const [notificationCount, setNotificationCount] = useState(3); 
 
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
@@ -112,7 +112,7 @@ const Home = () => {
       <AppBar
   position="sticky"
   elevation={1}
-  color="default" // ✅ changed from background.paper
+  color="default" // 
   sx={{ borderBottom: 1, borderColor: 'divider' }}
 >
   <Toolbar>
@@ -174,7 +174,7 @@ const Home = () => {
       <IconButton
         component={RouterLink}
         to={token ? "/my-profile" : "/login"}
-        color="primary" // ✅ explicit color
+        color="primary" // 
       >
         {user?.photo ? (
           <Avatar
@@ -182,7 +182,7 @@ const Home = () => {
             sx={{
               width: 32,
               height: 32,
-              bgcolor: 'primary.main', // ✅ fallback bg
+              bgcolor: 'primary.main', 
               color: 'white',
               fontWeight: 'bold',
             }}
@@ -218,9 +218,9 @@ const Home = () => {
 </AppBar>
 
 
-      {/* Main Content */}
+     
       <Container maxWidth="lg" sx={{ py: 4, flex: 1 }}>
-        {/* Mobile Search */}
+        
         {isMobile && (
           <Paper sx={{ p: 2, mb: 3 }}>
             <Stack direction="row" spacing={1}>
@@ -242,9 +242,9 @@ const Home = () => {
           </Paper>
         )}
 
-        {/* Sidebar + Content */}
+       
         <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 3 }}>
-          {/* Sidebar */}
+         
           <Paper sx={{ p: 2, width: isMobile ? '100%' : 250, mb: isMobile ? 2 : 0 }}>
             <Stack spacing={2}>
               <Typography variant="h6" gutterBottom>

@@ -73,7 +73,6 @@ export const mySwaps = async (req, res) => {
 
 /**
  * PATCH /api/swaps/:id/status  { status: accepted|rejected }
- * Only the receiver (toUser) may update status
  */
 export const updateStatus = async (req, res) => {
   try {

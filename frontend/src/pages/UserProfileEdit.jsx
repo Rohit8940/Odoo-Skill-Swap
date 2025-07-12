@@ -31,11 +31,10 @@ const arrayString = (arr = []) => arr.join(', ');
 
 const UserProfileEdit = () => {
   const { user, updateUser } = useAuth();
-  const [form, setForm] = useState(null);   // null until fetched
-  const [saved, setSaved] = useState(true); // disables Save when no changes
-  const [loading, setLoading] = useState(true); // loader while fetching
+  const [form, setForm] = useState(null);   
+  const [saved, setSaved] = useState(true); 
+  const [loading, setLoading] = useState(true); 
 
-  /* ------- fetch current profile ------- */
   useEffect(() => {
     const fetchMe = async () => {
       try {
@@ -96,7 +95,7 @@ const UserProfileEdit = () => {
 
     try {
       const { data } = await api.patch('/users/me', payload);
-      updateUser(data); // ✅ update AuthContext user
+      updateUser(data); 
       setForm({
         ...data,
         skillsOfferedText: arrayString(data.skillsOffered || []),

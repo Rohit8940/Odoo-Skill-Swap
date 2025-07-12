@@ -36,7 +36,7 @@ const UserCard = ({ user, onRequest, disabled }) => {
   };
 
   const handleRequest = (e) => {
-    e.stopPropagation(); // prevent card click
+    e.stopPropagation();
     if (onRequest) onRequest(user);
   };
 
@@ -55,14 +55,14 @@ const UserCard = ({ user, onRequest, disabled }) => {
         '&:hover': { backgroundColor: 'grey.100' },
       }}
     >
-      {/* Avatar */}
+     
       <Avatar
         src={photoUrl}
         alt={name}
         sx={{ width: 72, height: 72, flexShrink: 0 }}
       />
 
-      {/* User info */}
+ 
       <Box flexGrow={1}>
         <Typography variant="h6">{name}</Typography>
 

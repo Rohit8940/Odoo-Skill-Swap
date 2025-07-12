@@ -31,13 +31,13 @@ const SkillChips = ({ skills = [], color }) => (
 );
 
 const UserProfile = () => {
-  const { id } = useParams();          // could be undefined or "me"
+  const { id } = useParams();          
   const navigate = useNavigate();
-  const { user: current } = useAuth(); // logged‑in user from context
+  const { user: current } = useAuth(); 
   const [profile, setProfile] = useState(null);
   const [open, setOpen] = useState(false);
 
-  /* ---------- fetch or assign profile ---------- */
+ 
   useEffect(() => {
     const loadProfile = async () => {
       try {
@@ -47,12 +47,12 @@ const UserProfile = () => {
           return;
         }
 
-        // Case 2: viewing someone else
+     
         const { data } = await api.get(`/users/${id}`);
         setProfile(data);
       } catch (err) {
         console.error(err.response?.data || err.message);
-        navigate('/'); // fallback if user not found
+        navigate('/'); 
       }
     };
 

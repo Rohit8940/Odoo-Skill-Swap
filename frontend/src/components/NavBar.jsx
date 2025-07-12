@@ -33,7 +33,7 @@ const Navbar = () => {
             Admin
           </Button>
 
-          {/* 👇 Profile icon (ALWAYS renders) */}
+       
           <IconButton
             component={RouterLink}
             to="/my-profile"

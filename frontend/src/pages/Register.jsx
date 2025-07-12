@@ -40,7 +40,7 @@ const Register = () => {
         email: form.email,
         password: form.password,
       });
-      navigate('/'); // auto‑signed‑in, go to Home
+      navigate('/'); 
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }

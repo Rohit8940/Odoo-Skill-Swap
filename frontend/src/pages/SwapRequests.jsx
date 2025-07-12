@@ -17,10 +17,10 @@ import {
   Typography,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import api from '../services/api'; // axios instance
+import api from '../services/api'; 
 import { useAuth } from '../context/AuthProvider';
 
-/* ---------- Status helpers ---------- */
+
 const statusColor = {
   pending: 'warning',
   accepted: 'success',
@@ -35,7 +35,7 @@ const SwapCard = ({ swap, onAccept, onReject }) => {
   const { user } = useAuth(); // get current logged-in user
   const { fromUser, toUser, offeredSkill, requestedSkill, status } = swap;
 
-  // Defensive check to avoid null/undefined errors
+  
   const toUserId = typeof toUser === 'string' ? toUser : toUser?._id;
 const isReceiver = true;
 console.log('user._id:', user?._id);
@@ -67,7 +67,7 @@ console.log('isReceiver:', isReceiver);
         </Typography>
       </Box>
 
-      {/* Status / actions */}
+
       <Stack spacing={1} alignItems="flex-end">
         <Chip
           label={capital(status)}
@@ -116,7 +116,7 @@ const SwapRequests = () => {
     const fetchSwaps = async () => {
       try {
         const { data } = await api.get('/swaps/my');
-        setSwaps(data); // data should be an array of swaps
+        setSwaps(data); 
       } catch (err) {
         console.error('Failed to fetch swaps', err);
       }

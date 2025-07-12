@@ -10,9 +10,9 @@ import { protect } from '../middleware/auth.js';
 
 const router = Router();
 
-// Public access
-router.get('/', getPublicUsers);         // GET /api/users?skill=...&availability=...
-router.get('/:id', getPublicProfile);    // GET /api/users/:id
+
+router.get('/', getPublicUsers);    
+router.get('/:id', getPublicProfile);   
 router.patch('/me', protect, updateMe);
 
 

@@ -22,19 +22,18 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: true,
-      select: false, // never return hash by default
+      select: false, 
     },
 
-    /* ---------- public profile fields ---------- */
+
     isPublic: {
       type: Boolean,
-      default: true,          // ✅ always public at sign‑up
+      default: true,         
     },
 
     skillsOffered: {
       type: [String],
-      default: [],            // ✅ empty array instead of undefined
-      trim: true,
+      default: [],            
     },
 
     skillsWanted: {
@@ -46,7 +45,7 @@ const userSchema = new Schema(
     availability: {
       type: String,
       enum: ['weekdays', 'weekends', 'evenings', ''],
-      default: '',            // ✅ optional, prevents “undefined”
+      default: '',            
     },
 
     rating: {
