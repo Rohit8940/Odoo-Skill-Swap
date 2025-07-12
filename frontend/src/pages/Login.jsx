@@ -45,6 +45,9 @@ const Login = () => {
               <Button component={RouterLink} to="/search" variant="outlined">
                 Search
               </Button>
+              <Button component={RouterLink} to="/register" variant="outlined">
+                Register
+              </Button>
               <Button component={RouterLink} to="/swaps" variant="outlined">
                 Swaps
               </Button>

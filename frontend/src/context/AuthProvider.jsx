@@ -1,39 +1,38 @@
-// src/context/AuthProvider.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';
+import api from '../services/api';          // axios instance baseURL = http://localhost:5000/api
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
-  /* ────────── state ────────── */
   const [token, setToken] = useState(localStorage.getItem('token') || '');
-  const [user, setUser] = useState(() => {
-    const cached = localStorage.getItem('user');
-    return cached ? JSON.parse(cached) : null;
-  });
+  const [user, setUser]   = useState(
+    () => JSON.parse(localStorage.getItem('user')) || null
+  );
 
-  /* ────────── side‑effects ────────── */
+  // attach token to axios
   useEffect(() => {
-    if (token) localStorage.setItem('token', token);
-    else localStorage.removeItem('token');
+    api.defaults.headers.common.Authorization = token ? `Bearer ${token}` : '';
+    token
+      ? localStorage.setItem('token', token)
+      : localStorage.removeItem('token');
   }, [token]);
 
   useEffect(() => {
-    if (user) localStorage.setItem('user', JSON.stringify(user));
-    else localStorage.removeItem('user');
+    user
+      ? localStorage.setItem('user', JSON.stringify(user))
+      : localStorage.removeItem('user');
   }, [user]);
 
-  /* ────────── actions ────────── */
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    setToken(data.token);
-    setUser(data.user); // backend must return { token, user }
+    setToken(`Bearer ${data.token}`);
+    setUser(data.user);
   };
 
   const register = async (values) => {
     const { data } = await api.post('/auth/register', values);
-    setToken(data.token);
+    setToken(`Bearer ${data.token}`);
     setUser(data.user);
   };
 
@@ -42,10 +41,11 @@ const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  /* ────────── context value ────────── */
-  const authValue = { token, user, login, register, logout };
-
-  return <AuthContext.Provider value={authValue}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ token, user, login, register, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export default AuthProvider;

@@ -1,34 +1,31 @@
-import 'dotenv/config';
+// src/server.js
 import express from 'express';
-import morgan from 'morgan';
-import helmet from 'helmet';
 import cors from 'cors';
-import compression from 'compression';
-import rateLimit from 'express-rate-limit';
-import { connectDB } from './config/db.js';
-import { errorHandler } from './middleware/errorHandler.js';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-import authRoutes from './routes/auth.routes.js';
-import userRoutes from './routes/user.routes.js';
-import swapRoutes from './routes/swap.routes.js';
+import authRoutes from './routes/auth.routes.js';   // ← routes
 
+dotenv.config();
+
+// 1️⃣ create the app
 const app = express();
 
-app.use([
-  cors(),
-  helmet(),
-  compression(),
-  morgan('dev'),
-  express.json(),
-  rateLimit({ windowMs: 60_000, max: 100 }),
-]);
+// 2️⃣ global middleware
+app.use(cors());
+app.use(express.json());
 
+// 3️⃣ mount routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/swaps', swapRoutes);
 
-app.use(errorHandler);
+// 4️⃣ (OPTIONAL) simple health check
+app.get('/', (req, res) => res.send('API is running'));
 
+// 5️⃣ connect DB then listen
 const PORT = process.env.PORT || 5000;
-await connectDB(); // top‑level await is fine in ESM
-app.listen(PORT, () => console.log(`🚀 http://localhost:${PORT}`));
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    app.listen(PORT, () => console.log(`🚀  http://localhost:${PORT}`));
+  })
+  .catch((err) => console.error('DB connection error:', err));
