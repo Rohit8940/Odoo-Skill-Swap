@@ -12,8 +12,10 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthProvider.jsx';
 import UserCard from '../components/UserCard.jsx';
-import api from '../services/api'; // <-- axios instance w/ JWT
+import api from '../services/api'; // axios instance w/ JWT
 
 const Home = () => {
   /* ------------ state ------------ */
@@ -22,6 +24,10 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const pageSize = 5; // users per page
+
+  /* ------------ auth stuff ------------ */
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   /* ------------ fetch users ------------ */
   useEffect(() => {
@@ -55,9 +61,9 @@ const Home = () => {
         },
       ];
       setUsers(mock);
-      // In real app:
+      // Real call example:
       // const { data } = await api.get('/users', { params: { skill: query, availability } })
-      // setUsers(data)
+      // setUsers(data);
     };
     fetchUsers();
   }, [query, availability]);
@@ -73,6 +79,35 @@ const Home = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
+      {/* DEV NAV BUTTONS */}
+      <Stack direction="row" spacing={2} mb={3} justifyContent="center">
+        <Button component={RouterLink} to="/" variant="outlined">
+          Home
+        </Button>
+        <Button component={RouterLink} to="/search" variant="outlined">
+          Search
+        </Button>
+        <Button component={RouterLink} to="/swaps" variant="outlined">
+          Swaps
+        </Button>
+        <Button component={RouterLink} to="/admin" variant="outlined">
+          Admin
+        </Button>
+        <Button component={RouterLink} to="/users/1" variant="outlined">
+          Demo Profile
+        </Button>
+        <Button
+          color="error"
+          variant="contained"
+          onClick={() => {
+            logout();
+            navigate('/login');
+          }}
+        >
+          Logout
+        </Button>
+      </Stack>
+
       {/* Filter + search bar */}
       <Stack direction="row" spacing={2} mb={4}>
         <FormControl sx={{ minWidth: 160 }}>
@@ -98,14 +133,7 @@ const Home = () => {
           fullWidth
         />
 
-        <Button
-          variant="contained"
-          onClick={() => {
-            /* trigger useEffect because query already updated */
-          }}
-        >
-          Search
-        </Button>
+        <Button variant="contained">Search</Button>
       </Stack>
 
       {/* User list */}

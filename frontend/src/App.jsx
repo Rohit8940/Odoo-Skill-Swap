@@ -1,26 +1,25 @@
 // src/App.jsx
 import { Routes, Route } from 'react-router-dom';
-import AuthProvider, { useAuth } from './context/AuthProvider.jsx';
-import Login from './pages/Login.jsx';
-import Home from './pages/Home.jsx'; // ⬅️ Import the new Home page
+import AuthProvider from './context/AuthProvider.jsx';
 
-const PrivateRoute = ({ children }) => {
-  const { token } = useAuth();
-  return token ? children : <Login />;
-};
+import Login from './pages/Login.jsx';
+import Home from './pages/Home.jsx';
+import UserProfile from './pages/UserProfile.jsx';
+// import any other pages you want to test
+// import Search from './pages/Search.jsx';
+// import Swaps from './pages/Swaps.jsx';
+// import Admin from './pages/Admin.jsx';
 
 const App = () => (
   <AuthProvider>
     <Routes>
+      {/* Public routes for quick testing */}
       <Route path="/login" element={<Login />} />
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <Home />
-          </PrivateRoute>
-        }
-      />
+      <Route path="/" element={<Home />} />
+      <Route path="/users/:id" element={<UserProfile />} />
+      {/* <Route path="/search" element={<Search />} /> */}
+      {/* <Route path="/swaps"  element={<Swaps />} /> */}
+      {/* <Route path="/admin"  element={<Admin />} /> */}
     </Routes>
   </AuthProvider>
 );
