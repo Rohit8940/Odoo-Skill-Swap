@@ -38,42 +38,11 @@ const Login = () => {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Stack direction="row" spacing={2} mb={3} justifyContent="center">
-              <Button component={RouterLink} to="/" variant="outlined">
-                Home
-              </Button>
-              <Button component={RouterLink} to="/search" variant="outlined">
-                Search
-              </Button>
-              <Button component={RouterLink} to="/register" variant="outlined">
-                Register
-              </Button>
-              <Button component={RouterLink} to="/swaps" variant="outlined">
-                Swaps
-              </Button>
-              <Button component={RouterLink} to="/admin" variant="outlined">
-                Admin
-              </Button>
-              <Button component={RouterLink} to="/users/1" variant="outlined">
-                Demo Profile
-              </Button>
-              <Button
-                color="error"
-                variant="contained"
-                onClick={() => {
-                  logout();
-                  navigate('/login');
-                }}
-              >
-                Logout
-              </Button>
-            </Stack>
+    
       <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
           <Typography variant="h6">Skill Swap Platform</Typography>
-          <Button size="small" component={RouterLink} to="/" variant="outlined">
-            Home
-          </Button>
+        
         </Box>
 
         <Box sx={{ textAlign: 'center', mb: 3 }}>

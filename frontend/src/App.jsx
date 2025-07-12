@@ -15,7 +15,7 @@ import UserProfileView from './pages/UserProfileView.jsx';
 /* ---------- Auth gate ---------- */
 const PrivateRoute = ({ children }) => {
   const { token } = useAuth();
-  return token ? children : <Navigate to="/login" replace />;
+  return token ? children : <Navigate to="/register" replace />;
 };
 
 const App = () => (

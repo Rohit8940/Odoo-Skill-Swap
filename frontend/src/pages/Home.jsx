@@ -13,12 +13,30 @@ import {
   Typography,
   IconButton,
   Avatar,
+  Paper,
+  AppBar,
+  Toolbar,
+  Badge,
+  useTheme,
+  useMediaQuery,
+  Divider,
+  Chip
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider.jsx';
 import UserCard from '../components/UserCard.jsx';
 import api from '../services/api';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import {
+  AccountCircle,
+  Search,
+  Notifications,
+  Logout,
+  Login,
+  Home as HomeIcon,
+  SwapHoriz,
+  AdminPanelSettings,
+  Person
+} from '@mui/icons-material';
 
 const pageSize = 5;
 
@@ -28,9 +46,12 @@ const Home = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [notificationCount, setNotificationCount] = useState(3); // Mock count
 
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -86,127 +107,283 @@ const Home = () => {
   const pageCount = Math.ceil(total / pageSize);
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* NAV BUTTONS */}
-      <Stack direction="row" spacing={2} mb={3} alignItems="center" justifyContent="space-between">
-        <Stack direction="row" spacing={2}>
-          <Button component={RouterLink} to="/" variant="outlined">
-            Home
-          </Button>
-         
-          <Button component={RouterLink} to="/swaps" variant="outlined">
-            Swaps
-          </Button>
-          <Button component={RouterLink} to="/admin" variant="outlined">
-            Admin
-          </Button>
-          <Button
-            onClick={() => navigate('/profile')}
-            variant="outlined"
-          >
-            Demo Profile
-          </Button>
-        </Stack>
-
-        {/* Profile icon + Logout */}
-        <Stack direction="row" spacing={2} alignItems="center">
-         <IconButton
-  component={RouterLink}
-  to={token ? "/my-profile" : "/login"} // 🔥 if logged in → profile, else → login
-  color="primary"
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* App Bar */}
+      <AppBar
+  position="sticky"
+  elevation={1}
+  color="default" // ✅ changed from background.paper
+  sx={{ borderBottom: 1, borderColor: 'divider' }}
 >
-  {user?.photo ? (
-    <Avatar src={user.photo} />
-  ) : (
-    <AccountCircleIcon fontSize="large" />
-  )}
-</IconButton>
+  <Toolbar>
+    <Typography
+      variant="h6"
+      component="div"
+      sx={{ flexGrow: 1, color: 'primary.main', fontWeight: 600 }}
+    >
+      SkillSwap
+    </Typography>
 
-          {token ? (
-            <Button
-              color="error"
-              variant="contained"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
-          ) : (
-            <Button variant="contained" onClick={() => navigate('/login')}>
-              Login
-            </Button>
-          )}
-        </Stack>
-      </Stack>
-
-      {/* Filter + search */}
-      <Stack direction="row" spacing={2} mb={4}>
-        <FormControl sx={{ minWidth: 160 }}>
-          <InputLabel id="avail-label">Availability</InputLabel>
-          <Select
-            labelId="avail-label"
-            value={availability}
-            label="Availability"
-            onChange={(e) => {
-              setAvailability(e.target.value);
-              setPage(1);
-            }}
-            size="small"
-          >
-            <MenuItem value="">Any</MenuItem>
-            <MenuItem value="weekdays">Weekdays</MenuItem>
-            <MenuItem value="weekends">Weekends</MenuItem>
-            <MenuItem value="evenings">Evenings</MenuItem>
-          </Select>
-        </FormControl>
-
+    {/* Search on desktop */}
+    {!isMobile && (
+      <Paper
+        component="form"
+        sx={{
+          p: '2px 4px',
+          display: 'flex',
+          alignItems: 'center',
+          width: 300,
+          mx: 2,
+        }}
+        elevation={0}
+      >
         <TextField
+          fullWidth
           placeholder="Search skills..."
+          variant="standard"
+          size="small"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
             setPage(1);
           }}
-          size="small"
-          fullWidth
+          InputProps={{
+            disableUnderline: true,
+          }}
+          sx={{ ml: 1, flex: 1 }}
         />
+        <IconButton type="submit" sx={{ p: '10px' }} color="primary">
+          <Search />
+        </IconButton>
+      </Paper>
+    )}
 
-        <Button variant="contained" onClick={() => setPage(1)}>
-          Search
-        </Button>
-      </Stack>
-
-      {/* User list */}
-      <Stack spacing={3}>
-        {users.filter((u) => u._id !== user?._id).length === 0 ? (
-          <Typography variant="body1">No users found.</Typography>
-        ) : (
-          users
-            .filter((u) => u._id !== user?._id)
-            .map((u) => (
-              <UserCard
-                key={u._id}
-                user={u}
-                onRequest={() => handleRequestSwap(u)}
-                disabled={!token}
-              />
-            ))
-        )}
-      </Stack>
-
-      {/* Pagination */}
-      {pageCount > 1 && (
-        <Box mt={4} display="flex" justifyContent="center">
-          <Pagination
-            count={pageCount}
-            page={page}
-            onChange={(_, v) => setPage(v)}
-            siblingCount={1}
-            boundaryCount={1}
-            shape="rounded"
-          />
-        </Box>
+    {/* Navigation */}
+    <Stack direction="row" spacing={1} alignItems="center">
+      {token && (
+        <IconButton
+          color="primary" // ✅ explicit color
+          onClick={() => navigate('/swaps')}
+        >
+          <Badge badgeContent={notificationCount} color="error">
+            <Notifications />
+          </Badge>
+        </IconButton>
       )}
-    </Container>
+
+      <IconButton
+        component={RouterLink}
+        to={token ? "/my-profile" : "/login"}
+        color="primary" // ✅ explicit color
+      >
+        {user?.photo ? (
+          <Avatar
+            src={user.photo}
+            sx={{
+              width: 32,
+              height: 32,
+              bgcolor: 'primary.main', // ✅ fallback bg
+              color: 'white',
+              fontWeight: 'bold',
+            }}
+          >
+            {user.name?.[0] || '?'}
+          </Avatar>
+        ) : (
+          <AccountCircle />
+        )}
+      </IconButton>
+
+      {token ? (
+        <Button
+          color="primary"
+          startIcon={<Logout />}
+          onClick={handleLogout}
+          size="small"
+        >
+          {!isMobile && 'Logout'}
+        </Button>
+      ) : (
+        <Button
+          color="primary"
+          startIcon={<Login />}
+          onClick={() => navigate('/login')}
+          size="small"
+        >
+          {!isMobile && 'Login'}
+        </Button>
+      )}
+    </Stack>
+  </Toolbar>
+</AppBar>
+
+
+      {/* Main Content */}
+      <Container maxWidth="lg" sx={{ py: 4, flex: 1 }}>
+        {/* Mobile Search */}
+        {isMobile && (
+          <Paper sx={{ p: 2, mb: 3 }}>
+            <Stack direction="row" spacing={1}>
+              <TextField
+                fullWidth
+                placeholder="Search skills..."
+                variant="outlined"
+                size="small"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setPage(1);
+                }}
+              />
+              <Button variant="contained" onClick={() => setPage(1)}>
+                <Search />
+              </Button>
+            </Stack>
+          </Paper>
+        )}
+
+        {/* Sidebar + Content */}
+        <Box sx={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 3 }}>
+          {/* Sidebar */}
+          <Paper sx={{ p: 2, width: isMobile ? '100%' : 250, mb: isMobile ? 2 : 0 }}>
+            <Stack spacing={2}>
+              <Typography variant="h6" gutterBottom>
+                Filters
+              </Typography>
+              
+              <FormControl fullWidth size="small">
+                <InputLabel id="avail-label">Availability</InputLabel>
+                <Select
+                  labelId="avail-label"
+                  value={availability}
+                  label="Availability"
+                  onChange={(e) => {
+                    setAvailability(e.target.value);
+                    setPage(1);
+                  }}
+                >
+                  <MenuItem value="">Any Availability</MenuItem>
+                  <MenuItem value="weekdays">Weekdays</MenuItem>
+                  <MenuItem value="weekends">Weekends</MenuItem>
+                  <MenuItem value="evenings">Evenings</MenuItem>
+                </Select>
+              </FormControl>
+
+              <Divider />
+
+              <Typography variant="h6" gutterBottom>
+                Quick Links
+              </Typography>
+              
+              <Button
+                variant="outlined"
+                startIcon={<HomeIcon />}
+                fullWidth
+                onClick={() => navigate('/')}
+              >
+                Home
+              </Button>
+              
+              <Button
+                variant="outlined"
+                startIcon={<SwapHoriz />}
+                fullWidth
+                onClick={() => navigate('/swaps')}
+              >
+                My Swaps
+              </Button>
+              
+              {user?.isAdmin && (
+                <Button
+                  variant="outlined"
+                  startIcon={<AdminPanelSettings />}
+                  fullWidth
+                  onClick={() => navigate('/admin')}
+                >
+                  Admin
+                </Button>
+              )}
+              
+              <Button
+                variant="outlined"
+                startIcon={<Person />}
+                fullWidth
+                onClick={() => navigate('/profile')}
+              >
+               Edit Profile
+              </Button>
+              <Button
+                variant="outlined"
+                startIcon={<Person />}
+                fullWidth
+                onClick={() => navigate('/register')}
+              >
+               Sign Up
+              </Button>
+            </Stack>
+          </Paper>
+
+          {/* Main Content */}
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h5" gutterBottom>
+              Available Skill Swappers
+            </Typography>
+            
+            {users.filter((u) => u._id !== user?._id).length === 0 ? (
+              <Paper sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="body1" color="text.secondary">
+                  No users found matching your criteria.
+                </Typography>
+                <Button variant="contained" sx={{ mt: 2 }} onClick={() => {
+                  setQuery('');
+                  setAvailability('');
+                  setPage(1);
+                }}>
+                  Clear Filters
+                </Button>
+              </Paper>
+            ) : (
+              <Stack spacing={2}>
+                {users
+                  .filter((u) => u._id !== user?._id)
+                  .map((u) => (
+                    <UserCard
+                      key={u._id}
+                      user={u}
+                      onRequest={() => handleRequestSwap(u)}
+                      disabled={!token}
+                    />
+                  ))}
+              </Stack>
+            )}
+
+            {/* Pagination */}
+            {pageCount > 1 && (
+              <Box mt={4} display="flex" justifyContent="center">
+                <Pagination
+                  count={pageCount}
+                  page={page}
+                  onChange={(_, v) => setPage(v)}
+                  color="primary"
+                  shape="rounded"
+                  showFirstButton
+                  showLastButton
+                />
+              </Box>
+            )}
+          </Box>
+        </Box>
+      </Container>
+
+      {/* Footer */}
+      <Box component="footer" sx={{ bgcolor: 'background.paper', py: 3, mt: 'auto' }}>
+        <Container maxWidth="lg">
+          <Typography variant="body2" color="text.secondary" align="center">
+            © {new Date().getFullYear()} SkillSwap. All rights reserved.
+          </Typography>
+        </Container>
+      </Box>
+    </Box>
   );
 };
 
