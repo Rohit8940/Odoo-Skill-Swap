@@ -16,12 +16,11 @@ This platform connects individuals based on mutual skill needs. A user can speci
 
 | Name           | Email                 |
 |----------------|-----------------------|
-| [Your Name]    | yourname@example.com  |
-| [Teammate 1]   | teammate1@example.com |
-| [Teammate 2]   | teammate2@example.com |
-| [Teammate 3]   | teammate3@example.com |
+| [Rohit Baruah]| baruahrohit344@gmail.com  |
+| [Ved Raval]   | ved247010@gmail.com |
 
-*(Replace with actual names and emails)*
+
+
 
 ---
 
@@ -33,7 +32,6 @@ This platform connects individuals based on mutual skill needs. A user can speci
 - **React Router DOM**
 - **Material UI**
 - **Axios**
-- **Zustand (for global state, optional)**
 
 ### ⚙️ Backend
 
@@ -42,7 +40,7 @@ This platform connects individuals based on mutual skill needs. A user can speci
 - **MongoDB (Mongoose)**
 - **JWT for authentication**
 - **Bcrypt for password hashing**
-- **CORS, dotenv, and morgan**
+- **CORS, dotenv**
 
 ---
 
