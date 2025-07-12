@@ -1,4 +1,5 @@
 // src/components/UserCard.jsx
+import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
   Box,
@@ -8,47 +9,64 @@ import {
   Typography,
 } from '@mui/material';
 
-const SkillChip = ({ label, color = 'default' }) => (
+const SkillChip = ({ label, color }) => (
   <Chip
     label={label}
     size="small"
+    variant="outlined"
     sx={{ mr: 0.5, mb: 0.5 }}
     color={color}
-    variant="outlined"
   />
 );
 
-const UserCard = ({ user, onRequest }) => {
+const UserCard = ({ user, onRequest, disabled }) => {
+  const navigate = useNavigate();
+
   const {
+    _id,
     name,
-    photo,
+    photoUrl,
     skillsOffered = [],
     skillsWanted = [],
     rating = 0,
   } = user;
 
+  const handleCardClick = () => {
+    navigate(`/users/${_id}`);
+  };
+
+  const handleRequest = (e) => {
+    e.stopPropagation(); // prevent card click
+    if (onRequest) onRequest(user);
+  };
+
   return (
     <Box
-      border={1}
-      borderColor="grey.300"
-      borderRadius={2}
-      p={2}
-      display="flex"
-      alignItems="center"
-      gap={2}
+      onClick={handleCardClick}
+      sx={{
+        border: 1,
+        borderColor: 'grey.300',
+        borderRadius: 2,
+        p: 2,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        cursor: 'pointer',
+        '&:hover': { backgroundColor: 'grey.100' },
+      }}
     >
-      {/* profile photo */}
+      {/* Avatar */}
       <Avatar
-        src={photo}
+        src={photoUrl}
         alt={name}
         sx={{ width: 72, height: 72, flexShrink: 0 }}
       />
 
-      {/* middle section */}
+      {/* User info */}
       <Box flexGrow={1}>
         <Typography variant="h6">{name}</Typography>
 
-        <Typography variant="subtitle2" sx={{ mt: 0.5, color: 'green.600' }}>
+        <Typography variant="subtitle2" sx={{ color: 'green', mt: 1 }}>
           Skills Offered →
         </Typography>
         <Stack direction="row" flexWrap="wrap">
@@ -57,7 +75,7 @@ const UserCard = ({ user, onRequest }) => {
           ))}
         </Stack>
 
-        <Typography variant="subtitle2" sx={{ mt: 1, color: 'blue.600' }}>
+        <Typography variant="subtitle2" sx={{ color: 'blue', mt: 1 }}>
           Skills Wanted →
         </Typography>
         <Stack direction="row" flexWrap="wrap">
@@ -70,7 +88,7 @@ const UserCard = ({ user, onRequest }) => {
           variant="caption"
           sx={{ display: 'block', mt: 1, color: 'text.secondary' }}
         >
-          rating {rating.toFixed(1)}/5
+          Rating: {rating.toFixed(1)}/5
         </Typography>
       </Box>
 
@@ -78,8 +96,8 @@ const UserCard = ({ user, onRequest }) => {
       <Button
         variant="contained"
         color="info"
-        onClick={() => onRequest(user)}
-        sx={{ borderRadius: 3 }}
+        onClick={handleRequest}
+        disabled={disabled}
       >
         Request
       </Button>

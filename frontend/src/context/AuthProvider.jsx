@@ -1,41 +1,48 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';          // axios instance baseURL = http://localhost:5000/api
+import api from '../services/api';  // Axios instance with baseURL
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
-  const [user, setUser]   = useState(
-    () => JSON.parse(localStorage.getItem('user')) || null
-  );
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || null);
 
-  // attach token to axios
+  // Set default Authorization header in axios on token change
   useEffect(() => {
-    api.defaults.headers.common.Authorization = token ? `Bearer ${token}` : '';
-    token
-      ? localStorage.setItem('token', token)
-      : localStorage.removeItem('token');
+    if (token) {
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+      localStorage.setItem('token', token);
+    } else {
+      delete api.defaults.headers.common.Authorization;
+      localStorage.removeItem('token');
+    }
   }, [token]);
 
+  // Store user in localStorage
   useEffect(() => {
-    user
-      ? localStorage.setItem('user', JSON.stringify(user))
-      : localStorage.removeItem('user');
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
   }, [user]);
 
+  // Login
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    setToken(`Bearer ${data.token}`);
+    setToken(data.token);          // ✅ no "Bearer " prefix here
     setUser(data.user);
   };
 
+  // Register
   const register = async (values) => {
     const { data } = await api.post('/auth/register', values);
-    setToken(`Bearer ${data.token}`);
+    setToken(data.token);          // ✅ no "Bearer " prefix here
     setUser(data.user);
   };
 
+  // Logout
   const logout = () => {
     setToken('');
     setUser(null);

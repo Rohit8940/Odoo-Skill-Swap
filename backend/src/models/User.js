@@ -4,6 +4,7 @@ const { Schema, model } = mongoose;
 
 const userSchema = new Schema(
   {
+    /* ---------- core auth ---------- */
     name: {
       type: String,
       required: true,
@@ -18,14 +19,47 @@ const userSchema = new Schema(
       trim: true,
     },
 
-    // hashed password (never return it in API):
     password: {
       type: String,
       required: true,
-      select: false,
+      select: false, // never return hash by default
+    },
+
+    /* ---------- public profile fields ---------- */
+    isPublic: {
+      type: Boolean,
+      default: true,          // ✅ always public at sign‑up
+    },
+
+    skillsOffered: {
+      type: [String],
+      default: [],            // ✅ empty array instead of undefined
+      trim: true,
+    },
+
+    skillsWanted: {
+      type: [String],
+      default: [],
+      trim: true,
+    },
+
+    availability: {
+      type: String,
+      enum: ['weekdays', 'weekends', 'evenings', ''],
+      default: '',            // ✅ optional, prevents “undefined”
+    },
+
+    rating: {
+      type: Number,
+      default: 0,
+    },
+
+    photoUrl: {
+      type: String,
+      default: '',
     },
   },
-  { timestamps: true } // adds createdAt / updatedAt
+  { timestamps: true }
 );
 
 export default model('User', userSchema);

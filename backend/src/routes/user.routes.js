@@ -1,11 +1,14 @@
+// src/routes/user.routes.js
 import { Router } from 'express';
-import { getMe, updateMe } from '../controllers/user.controller.js';
-import { protect } from '../middleware/auth.js';
+import {
+  getPublicUsers,
+  getPublicProfile
+} from '../controllers/user.controller.js';
 
 const router = Router();
 
-router.use(protect);
-router.get('/me', getMe);
-router.put('/me', updateMe);
+// Public access
+router.get('/', getPublicUsers);         // GET /api/users?skill=...&availability=...
+router.get('/:id', getPublicProfile);    // GET /api/users/:id
 
 export default router;
