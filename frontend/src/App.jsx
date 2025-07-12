@@ -10,6 +10,7 @@ import UserProfile from './pages/UserProfile.jsx';
 import UserProfileEdit from './pages/UserProfileEdit.jsx';
 import SwapRequests from './pages/SwapRequests.jsx';
 import Admin from './pages/Admin.jsx';
+import UserProfileView from './pages/UserProfileView.jsx';
 
 /* ---------- Auth gate ---------- */
 const PrivateRoute = ({ children }) => {
@@ -56,6 +57,14 @@ const App = () => (
         element={
           <PrivateRoute>
             <SwapRequests />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/my-profile"
+        element={
+          <PrivateRoute>
+            <UserProfileView />
           </PrivateRoute>
         }
       />

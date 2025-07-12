@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import { useState, useEffect } from 'react';
 import {
   Box,
@@ -11,114 +10,135 @@ import {
   Select,
   Stack,
   TextField,
+  Typography,
+  IconButton,
+  Avatar,
 } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthProvider.jsx';
 import UserCard from '../components/UserCard.jsx';
 import api from '../services/api';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-const pageSize = 5; // constant
+const pageSize = 5;
 
 const Home = () => {
-  /* ------------ state ------------ */
   const [availability, setAvailability] = useState('');
   const [query, setQuery] = useState('');
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
-  /* ------------ auth ------------ */
   const { user, token, logout } = useAuth();
   const navigate = useNavigate();
 
-  /* ------------ fetch users ------------ */
- useEffect(() => {
-  console.log('Home mounted', { user, token });
-  const fetchUsers = async () => {
-    try {
-      const { data } = await api.get('/users', {
-        params: { skill: query, availability, page, limit: pageSize },
-      });
-      console.log('API /users response:', data);
-      setUsers(data.users);
-      setTotal(data.total);
-    } catch (err) {
-      console.error('Fetch users failed', err.response?.data || err.message);
-    }
-  };
-  fetchUsers();
-}, [query, availability, page]);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data } = await api.get('/users', {
+          params: { skill: query, availability, page, limit: pageSize },
+        });
+        setUsers(data.users || []);
+        setTotal(data.total || 0);
+      } catch (err) {
+        console.error('Fetch users failed', err.response?.data || err.message);
+      }
+    };
+    fetchUsers();
+  }, [query, availability, page]);
 
-
-  /* ------------ handlers ------------ */
   const handleRequestSwap = async (toUser) => {
     if (!token) {
-      // not logged in → redirect to login
       navigate('/login');
+      return;
+    }
+    if (!user?.skillsOffered || user.skillsOffered.length === 0) {
+      alert('Please add at least one skill in your profile first.');
+      navigate('/profile');
+      return;
+    }
+    const offeredSkill = user.skillsOffered[0];
+    const requestedSkill = toUser.skillsWanted?.[0] || '';
+
+    if (!requestedSkill) {
+      alert('Target user has no skills wanted listed.');
       return;
     }
 
     try {
       await api.post('/swaps', {
         toUser: toUser._id,
-        offeredSkill: user?.skillsOffered?.[0] || 'N/A',   // TODO: pick real skill
-        requestedSkill: toUser.skillsWanted?.[0] || 'N/A',
+        offeredSkill,
+        requestedSkill,
       });
-      // optional: toast success
+      alert('Swap request sent!');
     } catch (err) {
       console.error('Swap request failed', err.response?.data || err.message);
+      alert(err.response?.data?.message || 'Swap request failed');
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   const pageCount = Math.ceil(total / pageSize);
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      {/* DEV NAV BUTTONS */}
-      <Stack direction="row" spacing={2} mb={3} justifyContent="center">
-        <Button component={RouterLink} to="/" variant="outlined">
-          Home
-        </Button>
-        <Button component={RouterLink} to="/search" variant="outlined">
-          Search
-        </Button>
-        <Button component={RouterLink} to="/swaps" variant="outlined">
-          Swaps
-        </Button>
-        <Button component={RouterLink} to="/admin" variant="outlined">
-          Admin
-        </Button>
-       <Button
-  component={RouterLink}
-  to={users.length ? `/users/${users[0]._id}` : '/'}
-  variant="outlined"
-  disabled={!users.length}
->
-  Demo Profile
-</Button>
+      {/* NAV BUTTONS */}
+      <Stack direction="row" spacing={2} mb={3} alignItems="center" justifyContent="space-between">
+        <Stack direction="row" spacing={2}>
+          <Button component={RouterLink} to="/" variant="outlined">
+            Home
+          </Button>
+         
+          <Button component={RouterLink} to="/swaps" variant="outlined">
+            Swaps
+          </Button>
+          <Button component={RouterLink} to="/admin" variant="outlined">
+            Admin
+          </Button>
+          <Button
+            onClick={() => navigate('/profile')}
+            variant="outlined"
+          >
+            Demo Profile
+          </Button>
+        </Stack>
 
-        {token ? (
-          <Button
-            color="error"
-            variant="contained"
-            onClick={() => {
-              logout();
-              navigate('/login');
-            }}
-          >
-            Logout
-          </Button>
-        ) : (
-          <Button
-            variant="contained"
-            onClick={() => navigate('/login')}
-          >
-            Login
-          </Button>
-        )}
+        {/* Profile icon + Logout */}
+        <Stack direction="row" spacing={2} alignItems="center">
+         <IconButton
+  component={RouterLink}
+  to={token ? "/my-profile" : "/login"} // 🔥 if logged in → profile, else → login
+  color="primary"
+>
+  {user?.photo ? (
+    <Avatar src={user.photo} />
+  ) : (
+    <AccountCircleIcon fontSize="large" />
+  )}
+</IconButton>
+
+          {token ? (
+            <Button
+              color="error"
+              variant="contained"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={() => navigate('/login')}>
+              Login
+            </Button>
+          )}
+        </Stack>
       </Stack>
 
-      {/* Filter + search bar */}
+      {/* Filter + search */}
       <Stack direction="row" spacing={2} mb={4}>
         <FormControl sx={{ minWidth: 160 }}>
           <InputLabel id="avail-label">Availability</InputLabel>
@@ -157,14 +177,20 @@ const Home = () => {
 
       {/* User list */}
       <Stack spacing={3}>
-        {users.map((u) => (
-          <UserCard
-            key={u._id}
-            user={u}
-            onRequest={() => handleRequestSwap(u)}
-            disabled={!token}          // UserCard hides button if not logged‑in
-          />
-        ))}
+        {users.filter((u) => u._id !== user?._id).length === 0 ? (
+          <Typography variant="body1">No users found.</Typography>
+        ) : (
+          users
+            .filter((u) => u._id !== user?._id)
+            .map((u) => (
+              <UserCard
+                key={u._id}
+                user={u}
+                onRequest={() => handleRequestSwap(u)}
+                disabled={!token}
+              />
+            ))
+        )}
       </Stack>
 
       {/* Pagination */}

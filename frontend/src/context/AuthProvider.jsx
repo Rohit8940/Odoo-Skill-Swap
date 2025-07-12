@@ -1,14 +1,17 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';  // Axios instance with baseURL
+import React, { useState, useEffect, useContext, createContext } from 'react';
+import api from '../services/api'; // make sure you imported api here
 
 const AuthContext = createContext();
+
 export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
-  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || null);
+  const [user, setUser] = useState(
+    () => JSON.parse(localStorage.getItem('user')) || null
+  );
 
-  // Set default Authorization header in axios on token change
+  /* Attach token to axios */
   useEffect(() => {
     if (token) {
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
@@ -19,37 +22,47 @@ const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  // Store user in localStorage
+  /* Keep user in storage */
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
+    user
+      ? localStorage.setItem('user', JSON.stringify(user))
+      : localStorage.removeItem('user');
   }, [user]);
 
-  // Login
+  /* ------- Helpers ------- */
+  const refreshProfile = async () => {
+    const { data } = await api.get('/users/me');
+    setUser(data);
+  };
+
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    setToken(data.token);          // ✅ no "Bearer " prefix here
-    setUser(data.user);
+    setToken(data.token);
+    await refreshProfile(); // load full profile
   };
 
-  // Register
   const register = async (values) => {
     const { data } = await api.post('/auth/register', values);
-    setToken(data.token);          // ✅ no "Bearer " prefix here
-    setUser(data.user);
+    setToken(data.token);
+    await refreshProfile();
   };
 
-  // Logout
   const logout = () => {
     setToken('');
     setUser(null);
   };
 
+  const authValue = {
+    token,
+    user,
+    login,
+    register,
+    logout,
+    updateUser: setUser,
+  };
+
   return (
-    <AuthContext.Provider value={{ token, user, login, register, logout }}>
+    <AuthContext.Provider value={authValue}>
       {children}
     </AuthContext.Provider>
   );

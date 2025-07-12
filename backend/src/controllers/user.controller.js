@@ -67,3 +67,16 @@ export const getPublicProfile = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch profile' });
   }
 };
+
+export const updateMe = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to update profile' });
+  }
+};

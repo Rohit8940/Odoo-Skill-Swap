@@ -16,4 +16,5 @@ const swapRequestSchema = new Schema(
   { timestamps: true }
 );
 
-export default model('SwapRequest', swapRequestSchema);
+export default model('Swap', swapRequestSchema);
+
